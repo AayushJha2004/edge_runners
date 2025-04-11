@@ -1,5 +1,10 @@
 #!/usr/bin/env tclsh
 
+# This script depends on several applications:
+# - tclsh   (`winget install --id Magicsplat.TclTk -e` or `apt install tcl tk`)
+# - tar     (`winget install --id GnuWin32.Tar -e`)
+# - openssl (`winget install --id FireDaemon.OpenSSL -e`)
+
 if {$argc != 1} {
     puts stderr "Usage: $argv0 <output_directory>"
     exit 1
@@ -25,16 +30,16 @@ if {[catch {package require Tk} err]} {
 
 set base64_data [clipboard get]
 
-# Decode the base64 data
-if {[catch {exec base64 -d <<< $base64_data} decoded_data]} {
-    puts stderr "Error decoding base64 data: $decoded_data"
+# Decode the base64 data and untar it directly
+if {[catch {open "|openssl base64 -d | tar -xz -C $output_dir" w} in]} {
+    puts stderr "Error processing data: $in"
     exit 1
 }
-
-# Untar and unzip the data
-if {[catch {exec tar -xz -C $output_dir <<< $decoded_data} err]} {
-    puts stderr "Error untarring data: $err"
-    exit 1
-}
+puts $in $base64_data
+flush $in
+close $in
 
 puts "Tarball extracted to $output_dir"
+
+exit
+
