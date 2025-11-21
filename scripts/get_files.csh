@@ -3,6 +3,13 @@
 # This is a C Shell script that automates the process of copying an entire
 # directory into the local clipboard as a base64-encoded tarball. It is a
 # workaround for remote systems that lack modern conveniences like `xclip`.
+#
+# The main dependency is xemacs, obviously, but it also depends on BSD `tar` and
+# `base64`. When you run this command, an xemacs window should briefly appear.
+# It may remain open for a few moments or longer depending on how much data you
+# are copying. After it finishes loading your clipboard, it will close on its
+# own. Then, immediately use the `get_files.tcl` script locally to save the files
+# that are in your clipboard.
 
 # Check if a directory argument is provided.
 if ($#argv == 0) then
